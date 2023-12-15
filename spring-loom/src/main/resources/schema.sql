@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS audit(id SERIAL PRIMARY KEY, uri VARCHAR(255), response_code INTEGER, action_time timestamp);

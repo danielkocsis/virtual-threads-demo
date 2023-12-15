@@ -4,12 +4,16 @@ Inspired by [this](https://www.danvega.dev/blog/virtual-threads-spring-boot) gre
 
 This small projects is aiming to measure basic performance differences of the same very made up blocking web application considering the following scenarios:
 
-> Spring Boot version is 3.2 and JDK version is 21
+> Common: Spring Boot version is 3.2 and JDK version is 21
 
 1. OS Threads + Spring Web MVC (Tomcat)
 2. Virtual Threads + Spring MVC (Tomcat)
 3. OS Threads + Spring Reactor (Netty)
 4. Virtual Threads + Spring Reactor (Netty)
+
+## Project structure
+
+I think structure must be obvious for anyone looking at this repo :) However, source code handling wise, in `main` you can find 2 commits, first contains Tomcat specific state and second is the Webflux specific one.
 
 ## Measurement conditions
 

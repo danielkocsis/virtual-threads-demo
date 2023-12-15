@@ -1,6 +1,6 @@
 # Virtual Threads 
 
-Inspired by [this](https://www.danvega.dev/blog/virtual-threads-spring-boot) great article by Dan Vega and the release of Spring Boot 3.2 with JDK21 support https://spring.io/blog/2023/09/09/all-together-now-spring-boot-3-2-graalvm-native-images-java-21-and-virtual and a little bit more details please see the [release notes](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2-Release-Notes#support-for-virtual-threads).
+Inspired by [this](https://www.danvega.dev/blog/virtual-threads-spring-boot) great article by Dan Vega and the release of [Spring Boot 3.2 with JDK21 support](https://spring.io/blog/2023/09/09/all-together-now-spring-boot-3-2-graalvm-native-images-java-21-and-virtual) (and for more details please see the [release notes](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2-Release-Notes#support-for-virtual-threads)).
 
 This small projects is aiming to measure basic performance differences of the same very made up blocking web application considering the following scenarios:
 

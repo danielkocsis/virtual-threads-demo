@@ -1,6 +1,6 @@
 # Virtual Threads 
 
-Inspired by [this](https://www.danvega.dev/blog/virtual-threads-spring-boot) great article by Dan Vega.
+Inspired by [this](https://www.danvega.dev/blog/virtual-threads-spring-boot) great article by Dan Vega and the release of Spring Boot 3.2 with JDK21 support https://spring.io/blog/2023/09/09/all-together-now-spring-boot-3-2-graalvm-native-images-java-21-and-virtual and a little bit more details please see the [release notes](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.2-Release-Notes#support-for-virtual-threads).
 
 This small projects is aiming to measure basic performance differences of the same very made up blocking web application considering the following scenarios:
 
@@ -24,10 +24,10 @@ so in case of Apache Tomcat I limited the Tomcat threads to 50% of my machine co
 
 ## Results
 
-|             | Virtual Threads ON  |  Virtual Threads Off  |
-|-------------|:-------------------:|:---------------------:|
-| **Tomcat**  |        7.7s         |          40s          |
-| **Reactor** |                     |                       |
+|                            | Virtual Threads ON | Virtual Threads Off |
+|----------------------------|:------------------:|:-------------------:|
+| **Spring MVC + Tomcat**    |        7.7s        |         40s         |
+| **Spring Reactor + Netty** |        8.7s        |        8.7s         |
 
 
 ### Summary
@@ -40,8 +40,6 @@ For the sceptics :)
 <summary>Tomcat with Virtual Threads On</summary>
 
 ```
-hey -n 100 -c 50 http://localhost:8080/httpbin/block/3
-
 Summary:
   Total:	40.0051 secs
   Slowest:	17.1136 secs
@@ -94,11 +92,6 @@ Error distribution:
 <summary>Tomcat with Virtual Threads On</summary>
 
 ```
-spring.threads.virtual.enabled=true
-server.tomcat.threads.max=4
-
- hey -n 100 -c 50 http://localhost:8080/httpbin/block/3
-
 Summary:
   Total:	7.7112 secs
   Slowest:	4.4568 secs
@@ -142,5 +135,105 @@ Details (average, fastest, slowest):
 Status code distribution:
   [200]	100 responses
 ```
+</details>
 
+<details>
+<summary>Netty with Virtual Threads Off</summary>
+
+```
+Summary:
+  Total:	8.7523 secs
+  Slowest:	5.5336 secs
+  Fastest:	3.1106 secs
+  Average:	3.8188 secs
+  Requests/sec:	11.4255
+
+  Total data:	3300 bytes
+  Size/request:	33 bytes
+
+Response time histogram:
+  3.111 [1]	|■
+  3.353 [38]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  3.595 [9]	|■■■■■■■■■
+  3.837 [2]	|■■
+  4.080 [0]	|
+  4.322 [31]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  4.564 [11]	|■■■■■■■■■■■■
+  4.807 [6]	|■■■■■■
+  5.049 [1]	|■
+  5.291 [0]	|
+  5.534 [1]	|■
+
+
+Latency distribution:
+  10% in 3.1155 secs
+  25% in 3.1559 secs
+  50% in 4.2899 secs
+  75% in 4.3094 secs
+  90% in 4.4880 secs
+  95% in 4.6722 secs
+  99% in 5.5336 secs
+
+Details (average, fastest, slowest):
+  DNS+dialup:	0.0036 secs, 3.1106 secs, 5.5336 secs
+  DNS-lookup:	0.0010 secs, 0.0000 secs, 0.0023 secs
+  req write:	0.0002 secs, 0.0000 secs, 0.0025 secs
+  resp wait:	3.8139 secs, 3.1105 secs, 5.5232 secs
+  resp read:	0.0000 secs, 0.0000 secs, 0.0003 secs
+
+Status code distribution:
+  [200]	100 responses
+```
+</details>
+
+
+<details>
+<summary>Netty with Virtual Threads On</summary>
+
+```
+hey -n 100 -c 50 http://localhost:8080/httpbin/block/3
+
+Summary:
+  Total:	8.7813 secs
+  Slowest:	5.2182 secs
+  Fastest:	3.1112 secs
+  Average:	3.7778 secs
+  Requests/sec:	11.3878
+
+  Total data:	3300 bytes
+  Size/request:	33 bytes
+
+Response time histogram:
+  3.111 [1]	|■
+  3.322 [44]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  3.533 [3]	|■■■
+  3.743 [2]	|■■
+  3.954 [0]	|
+  4.165 [0]	|
+  4.375 [36]	|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  4.586 [11]	|■■■■■■■■■■
+  4.797 [1]	|■
+  5.007 [1]	|■
+  5.218 [1]	|■
+
+
+Latency distribution:
+  10% in 3.1204 secs
+  25% in 3.1362 secs
+  50% in 4.2967 secs
+  75% in 4.3023 secs
+  90% in 4.4416 secs
+  95% in 4.5709 secs
+  99% in 5.2182 secs
+
+Details (average, fastest, slowest):
+  DNS+dialup:	0.0026 secs, 3.1112 secs, 5.2182 secs
+  DNS-lookup:	0.0007 secs, 0.0000 secs, 0.0017 secs
+  req write:	0.0001 secs, 0.0000 secs, 0.0010 secs
+  resp wait:	3.7743 secs, 3.1111 secs, 5.2107 secs
+  resp read:	0.0001 secs, 0.0000 secs, 0.0006 secs
+
+Status code distribution:
+  [200]	100 responses
+```
 </details>

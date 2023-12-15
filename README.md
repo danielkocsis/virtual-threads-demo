@@ -27,15 +27,15 @@ so in case of Apache Tomcat I limited the Tomcat threads to 50% of my machine co
 `hey -n 100 -c 50 http://localhost:8080/httpbin/block/3`
 
 ## Results 
+
+### Summary
+
 The total time in seconds to process the 100 requests with 50 concurrent workers.
 
 |                            | Virtual Threads ON | Virtual Threads Off |
 |----------------------------|:------------------:|:-------------------:|
 | **Spring MVC + Tomcat**    |        7.7s        |         40s         |
 | **Spring Reactor + Netty** |        8.7s        |        8.7s         |
-
-
-### Summary
 
 ### Details
 

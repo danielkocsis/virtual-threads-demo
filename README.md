@@ -41,7 +41,9 @@ Each API calls sends **one** external HTTP call which takes 3 seconds to complet
 
 ### Scenario 2
 
-Each API calls sends **three** external HTTP calls which takes 3 seconds to complete.
+Each API calls sends **three** external HTTP calls which takes 3 seconds to complete. 
+In this version the Spring MVC controller utilised [Structured Concurrency](https://docs.oracle.com/en/java/javase/21/core/structured-concurrency.html) 
+JDK21 preview feature to invoke the RestClient calls parallel.
 
 `hey -n 100 -c 50 http://localhost:8080/httpbin/block?seconds=3&times=3`
 
@@ -49,5 +51,5 @@ Each API calls sends **three** external HTTP calls which takes 3 seconds to comp
 
 |                            | Virtual Threads ON | Virtual Threads Off |
 |----------------------------|:------------------:|:-------------------:|
-| **Spring MVC + Tomcat**    |        7.7s        |         40s         |
+| **Spring MVC + Tomcat**    |        7.5s        |         83s         |
 | **Spring Reactor + Netty** |        7.5s        |        7.3s         |

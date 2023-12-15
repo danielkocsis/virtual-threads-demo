@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -30,4 +30,16 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs += "--enable-preview"
+}
+
+tasks.withType(Test).configureEach {
+	jvmArgs += "--enable-preview"
+}
+
+tasks.withType(JavaExec).configureEach {
+	jvmArgs += "--enable-preview"
 }

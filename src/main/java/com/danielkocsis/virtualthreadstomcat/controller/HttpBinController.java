@@ -1,54 +1,38 @@
 package com.danielkocsis.virtualthreadstomcat.controller;
 
+import com.danielkocsis.virtualthreadstomcat.service.HttpBinClient;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
 
-import java.util.concurrent.StructuredTaskScope;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @RestController
 @RequestMapping("/httpbin")
 @Slf4j
 public class HttpBinController {
 
-    private final RestClient restClient;
-
-    public HttpBinController(RestClient.Builder restClientBuilder) {
-        restClient = restClientBuilder.baseUrl("https://httpbin.org/").build();
-    }
+    @Resource
+    private HttpBinClient httpBinClient;
 
     @GetMapping("/block")
-    public String delay(@RequestParam int seconds, @RequestParam int times) throws InterruptedException {
-        try (var scope = new StructuredTaskScope<>()) {
-            for (int i = 0; i < times; i++) {
-                scope.fork(() -> callExternalWebAPI(seconds));
-            }
+    public String delay(@RequestParam int seconds, @RequestParam int times) throws ExecutionException, InterruptedException {
+        List<CompletableFuture<ResponseEntity<Void>>> responseEntityFutures = new ArrayList<>();
 
-            scope.join();
+        for (int i = 0; i < times; i++) {
+            responseEntityFutures.add(httpBinClient.callExternalWebAPI(seconds));
         }
+
+        responseEntityFutures.forEach(CompletableFuture::join);
 
         String response = String.format("Called delay API %d times on %s", times, Thread.currentThread());
         log.info(response);
 
         return response;
-    }
-
-    private ResponseEntity<Void> callExternalWebAPI(int seconds) {
-        ResponseEntity<Void> result = null;
-
-        try {
-            result = restClient.get()
-                    .uri("/delay/" + seconds)
-                    .retrieve()
-                    .toBodilessEntity();
-
-            log.info("Response code {} on {}", result.getStatusCode(), Thread.currentThread());
-        }
-        catch (Throwable t) {
-            log.error("Error", t);
-        }
-
-        return result;
     }
 }

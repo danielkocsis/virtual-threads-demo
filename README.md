@@ -26,7 +26,8 @@ so in case of Apache Tomcat I limited the Tomcat threads to 50% of my machine co
 
 `hey -n 100 -c 50 http://localhost:8080/httpbin/block/3`
 
-## Results
+## Results 
+The total time in seconds to process the 100 requests with 50 concurrent workers.
 
 |                            | Virtual Threads ON | Virtual Threads Off |
 |----------------------------|:------------------:|:-------------------:|

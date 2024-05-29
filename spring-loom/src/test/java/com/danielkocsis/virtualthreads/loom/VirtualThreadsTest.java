@@ -112,6 +112,13 @@ public class VirtualThreadsTest {
         }
     }
 
+    /**
+     * A virtual thread cannot be unmounted during blocking operations when it is pinned to its carrier.
+     * A virtual thread is pinned in the following situations:
+     * - The virtual thread runs code inside a synchronized block or method
+     * - The virtual thread runs a native method or a foreign function
+     * @throws InterruptedException
+     */
     @Test
     public void threadPinningTest() throws InterruptedException {
         Thread thread1 = Thread.ofVirtual().name("SynchronizedBlockingTask").start(() -> synchronizedBlockingTestTask("SynchronizedBlockingTask"));
@@ -164,6 +171,11 @@ public class VirtualThreadsTest {
         assertEquals(Thread.State.TERMINATED, thread2.getState());
     }
 
+    /**
+     * Sources:
+     * - https://openjdk.org/jeps/462
+     * - https://docs.oracle.com/en/java/javase/22/core/structured-concurrency.html#GUID-CAC99F0A-8C9F-47D3-80BE-FFEBE7F2E300
+     */
     @Test
     public void structuredConcurrencyWhenAllTasksFinishTest() throws InterruptedException {
         List<StructuredTaskScope.Subtask<Boolean>> subtasks = new ArrayList<>();
@@ -177,6 +189,13 @@ public class VirtualThreadsTest {
         subtasks.stream().forEach(t -> log.info(STR."Task State: \{t.state()}"));
     }
 
+    /**
+     * Source: https://docs.oracle.com/en/java/javase/22/core/structured-concurrency.html#GUID-97F95BF4-A1E2-40A3-8439-6BB4E3D5C422
+     * Issues with thread locals:
+     * - Unconstrained mutability
+     * - Unbounded Lifetime
+     * - Expensive Inheritance
+     */
     @Test
     public void structuredConcurrencyWhenQuickestFinishesTest() throws InterruptedException {
         List<StructuredTaskScope.Subtask<Boolean>> subtasks = new ArrayList<>();
@@ -190,6 +209,11 @@ public class VirtualThreadsTest {
         subtasks.stream().forEach(t -> log.info(STR."Task State: \{t.state()}"));
     }
 
+    /**
+     * Source:
+     * - https://docs.oracle.com/en/java/javase/22/core/scoped-values.html
+     * - https://openjdk.org/jeps/464
+     */
     @Test
     public void scopedValueTest() {
         ScopedValue<String> SCOPED_VALUE = ScopedValue.newInstance();

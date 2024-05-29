@@ -15,6 +15,13 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Recommended articles on the topic:
+ * - https://docs.oracle.com/en/java/javase/21/core/concurrency.html
+ * - https://docs.oracle.com/en/java/javase/22/core/concurrency.html
+ * - https://blogs.oracle.com/javamagazine/post/java-loom-virtual-threads-platform-threads
+ * - https://blog.rockthejvm.com/ultimate-guide-to-java-virtual-threads/
+ */
 @Slf4j
 public class VirtualThreadsTest {
     private final Random random = new Random();
@@ -48,7 +55,15 @@ public class VirtualThreadsTest {
     }
 
     @Test
-    public void startVirtualThreadsWithoutNameTest() throws InterruptedException {
+    public void startBlockingTaskOnPlatformThread() throws InterruptedException {
+        Thread thread = Thread.ofPlatform().start(() -> blockingTestTask("Task1"));
+        thread.join();
+
+        assertEquals(Thread.State.TERMINATED, thread.getState());
+    }
+
+    @Test
+    public void startBlockingTaskOnVirtualThread() throws InterruptedException {
         Thread thread = Thread.startVirtualThread(() -> blockingTestTask("Task1"));
         thread.join();
 
@@ -58,26 +73,9 @@ public class VirtualThreadsTest {
     @Test
     public void startVirtualThreadsWithNameTest() throws InterruptedException {
         Thread thread = Thread.ofVirtual().name("Thread-Name").start(() -> blockingTestTask("Task-Name"));
-
         thread.join();
+
         assertEquals(Thread.State.TERMINATED, thread.getState());
-    }
-
-    @Test
-    @SneakyThrows
-    public void threadFactoryTest() {
-        List<Future<Boolean>> futures = new ArrayList<>();
-        ThreadFactory factory = Thread.ofVirtual().name("task-", 0).factory();
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
-        log.info(STR."Available processors are \{availableProcessors}");
-
-        try (var executor = Executors.newThreadPerTaskExecutor(factory)) {
-            IntStream.range(0, availableProcessors * 2).forEach(i -> futures.add(executor.submit(() -> blockingTestTask(STR."Task\{i}"))));
-        }
-
-        for (Future<Boolean> future : futures) {
-            assertTrue(future.isDone());
-        }
     }
 
     @Test
@@ -96,9 +94,27 @@ public class VirtualThreadsTest {
     }
 
     @Test
+    @SneakyThrows
+    public void threadFactoryTest() {
+        List<Future<Boolean>> futures = new ArrayList<>();
+        ThreadFactory factory = Thread.ofVirtual().name("task-", 0).factory();
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        log.info(STR."Available processors are \{availableProcessors}");
+
+        try (var executor = Executors.newThreadPerTaskExecutor(factory)) {
+            IntStream
+                    .range(0, availableProcessors * 2)
+                    .forEach(i -> futures.add(executor.submit(() -> blockingTestTask(STR."Task\{i}"))));
+        }
+
+        for (Future<Boolean> future : futures) {
+            assertTrue(future.isDone());
+        }
+    }
+
+    @Test
     public void threadPinningTest() throws InterruptedException {
         Thread thread1 = Thread.ofVirtual().name("SynchronizedBlockingTask").start(() -> synchronizedBlockingTestTask("SynchronizedBlockingTask"));
-
         Thread thread2 = Thread.ofVirtual().name("BlockingTask").start(() -> blockingTestTask("BlockingTask"));
 
         thread1.join();
@@ -113,7 +129,6 @@ public class VirtualThreadsTest {
         Lock lock = new ReentrantLock();
 
         Thread thread1 = Thread.ofVirtual().name("LockedBlockingTask").start(() -> lockedBlockingTestTask("LockedTask", lock));
-
         Thread thread2 = Thread.ofVirtual().name("BlockingTask").start(() -> blockingTestTask("BlockingTask"));
 
         thread1.join();
@@ -122,6 +137,7 @@ public class VirtualThreadsTest {
         assertEquals(Thread.State.TERMINATED, thread1.getState());
         assertEquals(Thread.State.TERMINATED, thread2.getState());
     }
+
 
     @Test
     public void threadLocalTest() throws InterruptedException {

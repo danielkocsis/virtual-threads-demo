@@ -84,7 +84,7 @@ public class VirtualThreadsTest {
         List<Future<Boolean>> futures = new ArrayList<>();
 
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            IntStream.range(1, 4).forEach(i -> futures.add(executor.submit(() -> blockingTestTask(STR."Task\{i}"))));
+            IntStream.range(1, 4).forEach(i -> futures.add(executor.submit(() -> blockingTestTask(String.format("Task %d", i)))));
 
             for (Future<Boolean> future : futures) {
                 future.get();
@@ -99,12 +99,12 @@ public class VirtualThreadsTest {
         List<Future<Boolean>> futures = new ArrayList<>();
         ThreadFactory factory = Thread.ofVirtual().name("task-", 0).factory();
         int availableProcessors = Runtime.getRuntime().availableProcessors();
-        log.info(STR."Available processors are \{availableProcessors}");
+        log.info(String.format("Available processors are %s", availableProcessors));
 
         try (var executor = Executors.newThreadPerTaskExecutor(factory)) {
             IntStream
                     .range(0, availableProcessors * 2)
-                    .forEach(i -> futures.add(executor.submit(() -> blockingTestTask(STR."Task\{i}"))));
+                    .forEach(i -> futures.add(executor.submit(() -> blockingTestTask(String.format("Task %d", i)))));
         }
 
         for (Future<Boolean> future : futures) {
@@ -152,16 +152,16 @@ public class VirtualThreadsTest {
 
         var thread1 = Thread.ofVirtual().name("thread-1").start(() -> {
             threadLocal.set("thread-1");
-            log.info(STR."ThreadLocal value: \{threadLocal.get()} on \{Thread.currentThread()}");
+            log.info("ThreadLocal value: " + threadLocal.get() + " on " + Thread.currentThread());
             sleep(Duration.ofSeconds(1L));
-            log.info(STR."ThreadLocal value: \{threadLocal.get()} on \{Thread.currentThread()}");
+            log.info("ThreadLocal value: " + threadLocal.get() + " on " + Thread.currentThread());
         });
 
         var thread2 = Thread.ofVirtual().name("thread-2").start(() -> {
             threadLocal.set("thread-2");
-            log.info(STR."ThreadLocal value: \{threadLocal.get()} on \{Thread.currentThread()}");
+            log.info("ThreadLocal value: " + threadLocal.get() + " on " + Thread.currentThread());
             sleep(Duration.ofSeconds(1L));
-            log.info(STR."ThreadLocal value: \{threadLocal.get()} on \{Thread.currentThread()}");
+            log.info("ThreadLocal value: " + threadLocal.get() + " on " + Thread.currentThread());
         });
 
         thread1.join();
@@ -181,12 +181,12 @@ public class VirtualThreadsTest {
         List<StructuredTaskScope.Subtask<Boolean>> subtasks = new ArrayList<>();
 
         try (var scope = new StructuredTaskScope()) {
-            IntStream.range(0, 4).forEach(i -> subtasks.add(scope.fork(() -> blockingTestTask(STR."Task\{i}"))));
+            IntStream.range(0, 4).forEach(i -> subtasks.add(scope.fork(() -> blockingTestTask("Task" + i))));
 
             scope.join();
         }
 
-        subtasks.stream().forEach(t -> log.info(STR."Task State: \{t.state()}"));
+        subtasks.stream().forEach(t -> log.info("Task State: " + t.state()));
     }
 
     /**
@@ -201,12 +201,12 @@ public class VirtualThreadsTest {
         List<StructuredTaskScope.Subtask<Boolean>> subtasks = new ArrayList<>();
 
         try (var scope = new StructuredTaskScope.ShutdownOnSuccess<>()) {
-            IntStream.range(0, 4).forEach(i -> subtasks.add(scope.fork(() -> blockingTestTask(STR."Task\{i}"))));
+            IntStream.range(0, 4).forEach(i -> subtasks.add(scope.fork(() -> blockingTestTask("Task" + i))));
 
             scope.join();
         }
 
-        subtasks.stream().forEach(t -> log.info(STR."Task State: \{t.state()}"));
+        subtasks.stream().forEach(t -> log.info("Task State: " + t.state()));
     }
 
     /**
@@ -241,9 +241,9 @@ public class VirtualThreadsTest {
 
     // Test helper methods
     private boolean scopedBlockingTestTask(ScopedValue<String> scopedValue) {
-        log.info(STR."Started blocking task \{scopedValue.get()} on \{Thread.currentThread()}");
+        log.info("Started blocking task " + scopedValue.get() + " on " + Thread.currentThread());
         sleep(Duration.ofMillis(random.nextInt(1000)));
-        log.info(STR."Finished blocking task \{scopedValue.get()} on \{Thread.currentThread()}");
+        log.info("Finished blocking task " + scopedValue.get() + " on " + Thread.currentThread());
 
         return true;
     }
@@ -264,9 +264,9 @@ public class VirtualThreadsTest {
     }
 
     private boolean blockingTestTask(String taskName) {
-        log.info(STR."Started blocking task \{taskName} on \{Thread.currentThread()}");
+        log.info("Started blocking task " + taskName + " on " + Thread.currentThread());
         sleep(Duration.ofMillis(random.nextInt(1000)));
-        log.info(STR."Finished blocking task \{taskName} on \{Thread.currentThread()}");
+        log.info("Finished blocking task " + taskName + " on " + Thread.currentThread());
         return true;
     }
 

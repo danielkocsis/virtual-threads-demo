@@ -58,7 +58,7 @@ public class APIController {
 
     private ResponseEntity<Void> callExternalWebAPI() {
         ResponseEntity<Void> response = restClient.get()
-                .uri(STR."/delay/\{serviceConfiguration.getDelay()}")
+                .uri(String.format("/delay/{}", serviceConfiguration.getDelay()))
                 .retrieve()
                 .toBodilessEntity();
 

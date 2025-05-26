@@ -52,7 +52,7 @@ public class APIController {
 
     private Mono<ResponseEntity<Void>> callExternalWebAPI() {
         return webClient.method(HttpMethod.GET)
-                .uri(STR."/delay/\{configuration.getDelay()}")
+                .uri("/delay/" + configuration.getDelay())
                 .retrieve()
                 .toBodilessEntity();
     }

@@ -59,7 +59,7 @@ public class APIController {
 
     private ResponseEntity<Void> callExternalWebAPI() {
         return restClient.get()
-                .uri(STR."/delay/\{configuration.getDelay()}")
+                .uri("/delay/" + configuration.getDelay())
                 .retrieve()
                 .toBodilessEntity();
     }

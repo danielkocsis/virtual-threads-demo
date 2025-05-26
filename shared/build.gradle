@@ -1,11 +1,17 @@
 dependencyManagement {
     imports {
-        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.2.6" // Update to the latest version
     }
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21) // Update to the latest JDK version
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {

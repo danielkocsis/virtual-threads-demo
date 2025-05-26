@@ -1,0 +1,18 @@
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file '/app/build.gradle' line: 5
+
+* What went wrong:
+An exception occurred applying plugin request [id: 'org.gradle.toolchains.foojay-resolver', version: '0.8.0']
+> Failed to apply plugin 'org.gradle.toolchains.foojay-resolver'.
+   > Settings plugins must be applied in the settings script.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 7s

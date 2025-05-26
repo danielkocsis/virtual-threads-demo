@@ -1,0 +1,10 @@
+npm ERR! code ENOENT
+npm ERR! syscall open
+npm ERR! path /app/client-ui/package.json
+npm ERR! errno -2
+npm ERR! enoent ENOENT: no such file or directory, open '/app/client-ui/package.json'
+npm ERR! enoent This is related to npm not being able to find a file.
+npm ERR! enoent 
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/jules/.npm/_logs/2025-05-26T07_43_10_346Z-debug-0.log

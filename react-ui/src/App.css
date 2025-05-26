@@ -1,0 +1,108 @@
+/* General App Styles */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f7f6;
+  color: #333;
+}
+
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+.App-header {
+  background-color: #282c34; /* Dark background for header */
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 8px;
+  color: white; /* Light text for header */
+  min-height: auto; /* Override CRA default */
+  display: block; /* Override CRA default */
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2em;
+}
+
+/* Flex container for demo components */
+.DemoComponentsWrapper {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px; /* Adds space between wrapped items */
+}
+
+/* Individual Demo Component Styles */
+.DemoComponent {
+  border: 1px solid #ddd;
+  padding: 25px;
+  margin: 10px; /* Reduced margin as gap is used in wrapper */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  width: 300px; /* Fixed width for each component */
+  min-height: 200px; /* Minimum height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Pushes button to bottom if content is short */
+}
+
+.DemoComponent h2 {
+  font-size: 1.5em;
+  color: #007bff; /* Primary color for heading */
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.DemoComponent p {
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.DemoComponent .count-display {
+  font-weight: bold;
+  color: #28a745; /* Green for count */
+  font-size: 1.1em;
+  margin-bottom: 15px;
+}
+
+.DemoComponent button {
+  background-color: #007bff; /* Primary button color */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: auto; /* Pushes button to bottom if this is the last element */
+}
+
+.DemoComponent button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+.DemoComponent .message-area {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #e9ecef; /* Light grey for message background */
+  border-radius: 6px;
+  font-size: 0.95em;
+  min-height: 40px; /* Ensure it has some height even when empty */
+  word-wrap: break-word; /* Prevent long messages from overflowing */
+}
+
+/* Remove default CRA logo animation if not used */
+.App-logo {
+  display: none; /* Assuming we are not using the spinning logo */
+}

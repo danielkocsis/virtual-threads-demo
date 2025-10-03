@@ -180,13 +180,13 @@ public class VirtualThreadsTest {
     public void structuredConcurrencyWhenAllTasksFinishTest() throws InterruptedException {
         List<StructuredTaskScope.Subtask<Boolean>> subtasks = new ArrayList<>();
 
-        try (var scope = new StructuredTaskScope()) {
+        try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.awaitAll())) {
             IntStream.range(0, 4).forEach(i -> subtasks.add(scope.fork(() -> blockingTestTask("Task" + i))));
 
             scope.join();
         }
 
-        subtasks.stream().forEach(t -> log.info("Task State: " + t.state()));
+        subtasks.forEach(t -> log.info("Task State: " + t.state()));
     }
 
     /**
@@ -200,13 +200,13 @@ public class VirtualThreadsTest {
     public void structuredConcurrencyWhenQuickestFinishesTest() throws InterruptedException {
         List<StructuredTaskScope.Subtask<Boolean>> subtasks = new ArrayList<>();
 
-        try (var scope = new StructuredTaskScope.ShutdownOnSuccess<>()) {
+        try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.anySuccessfulResultOrThrow())) {
             IntStream.range(0, 4).forEach(i -> subtasks.add(scope.fork(() -> blockingTestTask("Task" + i))));
 
             scope.join();
         }
 
-        subtasks.stream().forEach(t -> log.info("Task State: " + t.state()));
+        subtasks.forEach(t -> log.info("Task State: " + t.state()));
     }
 
     /**
@@ -219,7 +219,7 @@ public class VirtualThreadsTest {
         ScopedValue<String> SCOPED_VALUE = ScopedValue.newInstance();
 
         ScopedValue.where(SCOPED_VALUE, "task-1").run(() -> {
-            try (var scope = new StructuredTaskScope<>()) {
+            try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.awaitAll())) {
                 scope.fork(() -> scopedBlockingTestTask(SCOPED_VALUE));
                 scope.join();
             } catch (InterruptedException e) {
@@ -228,7 +228,7 @@ public class VirtualThreadsTest {
         });
 
         ScopedValue.where(SCOPED_VALUE, "task-2").run(() -> {
-            try (var scope = new StructuredTaskScope<>()) {
+            try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.awaitAll())) {
                 scope.fork(() -> scopedBlockingTestTask(SCOPED_VALUE));
                 scope.join();
             } catch (InterruptedException e) {
